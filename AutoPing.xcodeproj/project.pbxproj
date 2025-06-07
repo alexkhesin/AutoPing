@@ -6,8 +6,15 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		5ABEBAB72DF49EA60056398B /* RingBuffer in Frameworks */ = {isa = PBXBuildFile; productRef = 5ABEBAB62DF49EA60056398B /* RingBuffer */; };
+		5ABEBABA2DF49EB00056398B /* SimplePing in Frameworks */ = {isa = PBXBuildFile; productRef = 5ABEBAB92DF49EB00056398B /* SimplePing */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		5ABEBAA02DF49DCA0056398B /* AutoPing.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AutoPing.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		5ABEBAB32DF49E330056398B /* NOTES.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = NOTES.md; sourceTree = "<group>"; };
+		5ABEBAB42DF49E330056398B /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -23,6 +30,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5ABEBABA2DF49EB00056398B /* SimplePing in Frameworks */,
+				5ABEBAB72DF49EA60056398B /* RingBuffer in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -32,6 +41,8 @@
 		5ABEBA972DF49DCA0056398B = {
 			isa = PBXGroup;
 			children = (
+				5ABEBAB32DF49E330056398B /* NOTES.md */,
+				5ABEBAB42DF49E330056398B /* README.md */,
 				5ABEBAA22DF49DCA0056398B /* AutoPing */,
 				5ABEBAA12DF49DCA0056398B /* Products */,
 			);
@@ -65,6 +76,8 @@
 			);
 			name = AutoPing;
 			packageProductDependencies = (
+				5ABEBAB62DF49EA60056398B /* RingBuffer */,
+				5ABEBAB92DF49EB00056398B /* SimplePing */,
 			);
 			productName = AutoPing;
 			productReference = 5ABEBAA02DF49DCA0056398B /* AutoPing.app */;
@@ -94,6 +107,10 @@
 			);
 			mainGroup = 5ABEBA972DF49DCA0056398B;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				5ABEBAB52DF49EA60056398B /* XCRemoteSwiftPackageReference "RingBuffer" */,
+				5ABEBAB82DF49EB00056398B /* XCRemoteSwiftPackageReference "SimplePing" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 5ABEBAA12DF49DCA0056398B /* Products */;
 			projectDirPath = "";
@@ -250,14 +267,18 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_ENTITLEMENTS = AutoPing/AutoPing.entitlements;
-				CODE_SIGN_STYLE = Automatic;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Developer ID Application";
+				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 5H2NK6TXE8;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=macosx*]" = 5H2NK6TXE8;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSUIElement = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -266,6 +287,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.khesin.AutoPing;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				REGISTER_APP_GROUPS = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -277,14 +299,18 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_ENTITLEMENTS = AutoPing/AutoPing.entitlements;
-				CODE_SIGN_STYLE = Automatic;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Developer ID Application";
+				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 5H2NK6TXE8;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=macosx*]" = 5H2NK6TXE8;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSUIElement = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -293,6 +319,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.khesin.AutoPing;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				REGISTER_APP_GROUPS = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -321,6 +348,38 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		5ABEBAB52DF49EA60056398B /* XCRemoteSwiftPackageReference "RingBuffer" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/alexkhesin/RingBuffer";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+		5ABEBAB82DF49EB00056398B /* XCRemoteSwiftPackageReference "SimplePing" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/alexkhesin/SimplePing";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		5ABEBAB62DF49EA60056398B /* RingBuffer */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5ABEBAB52DF49EA60056398B /* XCRemoteSwiftPackageReference "RingBuffer" */;
+			productName = RingBuffer;
+		};
+		5ABEBAB92DF49EB00056398B /* SimplePing */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5ABEBAB82DF49EB00056398B /* XCRemoteSwiftPackageReference "SimplePing" */;
+			productName = SimplePing;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 5ABEBA982DF49DCA0056398B /* Project object */;
 }

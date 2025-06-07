@@ -1,0 +1,24 @@
+{
+  "originHash" : "97c295a77e760e08c31e475b399e90eef267e170ddb8572f5abc577508541dfa",
+  "pins" : [
+    {
+      "identity" : "ringbuffer",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/alexkhesin/RingBuffer",
+      "state" : {
+        "branch" : "main",
+        "revision" : "47282478853181dfdf6183872ca048f891603949"
+      }
+    },
+    {
+      "identity" : "simpleping",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/alexkhesin/SimplePing",
+      "state" : {
+        "branch" : "master",
+        "revision" : "68e44505500806c5ee6ce2b2df12d429a7619070"
+      }
+    }
+  ],
+  "version" : 3
+}
