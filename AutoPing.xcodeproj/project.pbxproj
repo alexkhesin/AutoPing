@@ -360,16 +360,16 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/alexkhesin/RingBuffer";
 			requirement = {
-				branch = main;
-				kind = branch;
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
 			};
 		};
 		5ABEBAB82DF49EB00056398B /* XCRemoteSwiftPackageReference "SimplePing" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/alexkhesin/SimplePing";
 			requirement = {
-				branch = master;
-				kind = branch;
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

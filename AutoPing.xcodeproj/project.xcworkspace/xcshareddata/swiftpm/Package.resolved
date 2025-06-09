@@ -6,8 +6,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/alexkhesin/RingBuffer",
       "state" : {
-        "branch" : "main",
-        "revision" : "47282478853181dfdf6183872ca048f891603949"
+        "revision" : "0c9856f7fecce415ace137cf32d3692bab9db51a",
+        "version" : "1.0.0"
       }
     },
     {
@@ -15,8 +15,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/alexkhesin/SimplePing",
       "state" : {
-        "branch" : "master",
-        "revision" : "68e44505500806c5ee6ce2b2df12d429a7619070"
+        "revision" : "68e44505500806c5ee6ce2b2df12d429a7619070",
+        "version" : "1.4.0"
       }
     }
   ],
