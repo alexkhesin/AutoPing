@@ -45,6 +45,8 @@ Icon:
 
 To package:
 
+* Project-level Build Settings, filter for Versioning, adjust
+  * Current Project Version and Marketing Version (TODO automate this somehow!)
 * Product/Archive
 * Distribute for Direct Distribution
 * Export Notarized App

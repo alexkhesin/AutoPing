@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5A4984A12DF8FE0300BD9C4F /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 5A4984A02DF8FE0300BD9C4F /* Sparkle */; };
 		5ABEBAB72DF49EA60056398B /* RingBuffer in Frameworks */ = {isa = PBXBuildFile; productRef = 5ABEBAB62DF49EA60056398B /* RingBuffer */; };
 		5ABEBABA2DF49EB00056398B /* SimplePing in Frameworks */ = {isa = PBXBuildFile; productRef = 5ABEBAB92DF49EB00056398B /* SimplePing */; };
 /* End PBXBuildFile section */
@@ -17,9 +18,22 @@
 		5ABEBAB42DF49E330056398B /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		5A59A7DD2DF91C87006782AE /* Exceptions for "AutoPing" folder in "AutoPing" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 5ABEBA9F2DF49DCA0056398B /* AutoPing */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		5ABEBAA22DF49DCA0056398B /* AutoPing */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				5A59A7DD2DF91C87006782AE /* Exceptions for "AutoPing" folder in "AutoPing" target */,
+			);
 			path = AutoPing;
 			sourceTree = "<group>";
 		};
@@ -30,6 +44,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5A4984A12DF8FE0300BD9C4F /* Sparkle in Frameworks */,
 				5ABEBABA2DF49EB00056398B /* SimplePing in Frameworks */,
 				5ABEBAB72DF49EA60056398B /* RingBuffer in Frameworks */,
 			);
@@ -78,6 +93,7 @@
 			packageProductDependencies = (
 				5ABEBAB62DF49EA60056398B /* RingBuffer */,
 				5ABEBAB92DF49EB00056398B /* SimplePing */,
+				5A4984A02DF8FE0300BD9C4F /* Sparkle */,
 			);
 			productName = AutoPing;
 			productReference = 5ABEBAA02DF49DCA0056398B /* AutoPing.app */;
@@ -110,6 +126,7 @@
 			packageReferences = (
 				5ABEBAB52DF49EA60056398B /* XCRemoteSwiftPackageReference "RingBuffer" */,
 				5ABEBAB82DF49EB00056398B /* XCRemoteSwiftPackageReference "SimplePing" */,
+				5A49849F2DF8FE0300BD9C4F /* XCRemoteSwiftPackageReference "Sparkle" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 5ABEBAA12DF49DCA0056398B /* Products */;
@@ -272,28 +289,29 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Developer ID Application";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 5;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=macosx*]" = 5H2NK6TXE8;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = AutoPing/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = AutoPing;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
-				INFOPLIST_KEY_LSUIElement = YES;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "(c) 2025 Alex Khesin";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.3;
 				PRODUCT_BUNDLE_IDENTIFIER = com.khesin.autoping;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				REGISTER_APP_GROUPS = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
+				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
 		};
@@ -307,28 +325,29 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Developer ID Application";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 5;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=macosx*]" = 5H2NK6TXE8;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = AutoPing/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = AutoPing;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
-				INFOPLIST_KEY_LSUIElement = YES;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "(c) 2025 Alex Khesin";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.3;
 				PRODUCT_BUNDLE_IDENTIFIER = com.khesin.autoping;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				REGISTER_APP_GROUPS = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
+				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;
 		};
@@ -356,6 +375,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		5A49849F2DF8FE0300BD9C4F /* XCRemoteSwiftPackageReference "Sparkle" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sparkle-project/Sparkle";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.7.0;
+			};
+		};
 		5ABEBAB52DF49EA60056398B /* XCRemoteSwiftPackageReference "RingBuffer" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/alexkhesin/RingBuffer";
@@ -375,6 +402,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		5A4984A02DF8FE0300BD9C4F /* Sparkle */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5A49849F2DF8FE0300BD9C4F /* XCRemoteSwiftPackageReference "Sparkle" */;
+			productName = Sparkle;
+		};
 		5ABEBAB62DF49EA60056398B /* RingBuffer */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 5ABEBAB52DF49EA60056398B /* XCRemoteSwiftPackageReference "RingBuffer" */;

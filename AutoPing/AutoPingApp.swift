@@ -18,6 +18,8 @@ import SwiftUI
 import SwiftData
 import OSLog
 import ServiceManagement
+import Sparkle
+import UserNotifications
 
 @main
 struct autopingApp: App {
@@ -60,15 +62,34 @@ struct SettingsView: View {
 
 class AppDelegate : NSObject, NSApplicationDelegate {
   static let log = Logger(subsystem: Bundle.main.bundleIdentifier!, category: "default")
-  
   private let statusBarItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
-  
+  private var updaterController: SPUStandardUpdaterController!
+
+  override init() {
+    super.init()
+    // Initialize the updater controller, which handles the Sparkle updater
+    updaterController = SPUStandardUpdaterController(startingUpdater: true, updaterDelegate: self, userDriverDelegate: self)
+  }
+
   func applicationDidFinishLaunching(_ notification: Notification) {
     let menu = NSMenu()
-    menu.addItem(NSMenuItem(title: "Preferences", action: #selector(preferencesAction(_:)), keyEquivalent: ""))
-    menu.addItem(NSMenuItem(title: "Quit", action: #selector(quitAction(_:)), keyEquivalent: ""))
+    menu.addItem(NSMenuItem(title: "Preferences",
+                            action: #selector(preferencesAction(_:)),
+                            keyEquivalent: ""))
+    let m = NSMenuItem(title: "Check for Updates",
+                       action: #selector(SPUStandardUpdaterController.checkForUpdates(_:)),
+                       keyEquivalent: "")
+    m.target = updaterController
+    menu.addItem(m)
+    menu.addItem(NSMenuItem(title: "Quit",
+                            action: #selector(quitAction(_:)),
+                            keyEquivalent: ""))
     
     statusBarItem.menu = menu
+    
+    // Make the app run in the background
+    NSApp.setActivationPolicy(.accessory)
+    UNUserNotificationCenter.current().delegate = self
     
     showPingData(avg: -1, percentFailed: 0)  // draw infinity at first
     start()
@@ -77,7 +98,11 @@ class AppDelegate : NSObject, NSApplicationDelegate {
   @objc private func preferencesAction(_ sender: Any?) {
     showPreferences()
   }
-  
+
+  @objc private func updatesAction(_ sender: Any?) {
+    // showPreferences()
+  }
+
   @objc private func quitAction(_ sender: Any?) {
     stop()
     NSApplication.shared.terminate(self)
@@ -216,5 +241,127 @@ extension AppDelegate : NSWindowDelegate {
       stop()
       start()
     }
+  }
+}
+
+let UPDATE_NOTIFICATION_IDENTIFIER = "UpdateCheck"
+
+// From https://sparkle-project.org/documentation/gentle-reminders/
+extension AppDelegate : SPUUpdaterDelegate, SPUStandardUserDriverDelegate, UNUserNotificationCenterDelegate {
+  // MARK: SPUStandardUserDriverDelegate
+  
+  // Declares that we support gentle scheduled update reminders to Sparkle's standard user driver
+  var supportsGentleScheduledUpdateReminders: Bool {
+    return true
+  }
+  
+  func standardUserDriverShouldHandleShowingScheduledUpdate(_ update: SUAppcastItem, andInImmediateFocus immediateFocus: Bool) -> Bool {
+    // If the standard user driver will show the update in immediate focus (e.g. near app launch),
+    // then let Sparkle take care of showing the update.
+    // Otherwise we will handle showing any other scheduled updates
+    AppDelegate.log.info(">>> standardUserDriverShouldHandleShowingScheduledUpdate: \(immediateFocus)")
+    return immediateFocus
+  }
+
+  func standardUserDriverWillHandleShowingUpdate(_ handleShowingUpdate: Bool, forUpdate update: SUAppcastItem, state: SPUUserUpdateState) {
+    AppDelegate.log.info(">>> standardUserDriverWillHandleShowingUpdate: \(handleShowingUpdate), \(state.userInitiated)")
+    /*
+    // We will ignore updates that the user driver will handle showing
+    // This includes user initiated (non-scheduled) updates
+    guard !handleShowingUpdate else {
+      return
+    }
+     
+    // Attach a gentle UI indicator on our window
+    do {
+      let updateButton = NSButton(frame: NSMakeRect(0, 0, 120, 100))
+      updateButton.title = "v\(update.displayVersionString) Available"
+      updateButton.bezelStyle = .recessed
+      updateButton.target = updaterController
+      updateButton.action = #selector(updaterController.checkForUpdates(_:))
+          
+      let accessoryViewController = NSTitlebarAccessoryViewController()
+      accessoryViewController.layoutAttribute = .right
+      accessoryViewController.view = updateButton
+          
+      self.window.addTitlebarAccessoryViewController(accessoryViewController)
+          
+      titlebarAccessoryViewController = accessoryViewController
+    }
+    */
+
+    // When an update alert will be presented, place the app in the foreground
+    // We will do this for updates the user initiated themselves too for consistency
+    // When we later post a notification, the act of clicking a notification will also change the app
+    // to have a regular activation policy. For consistency, we should do this if the user
+    // does not click on the notification too.
+    NSApp.setActivationPolicy(.regular)
+    
+    if (!state.userInitiated) {
+      // And add a badge to the app's dock icon indicating one alert occurred
+      NSApp.dockTile.badgeLabel = "1"
+      
+      // Post a user notification
+      // For banner style notification alerts, this may only trigger when the app is currently inactive.
+      // For alert style notification alerts, this will trigger when the app is active or inactive.
+      do {
+        let content = UNMutableNotificationContent()
+        content.title = "A new update is available"
+        content.body = "Version \(update.displayVersionString) is now available"
+          
+        let request = UNNotificationRequest(identifier: UPDATE_NOTIFICATION_IDENTIFIER, content: content, trigger: nil)
+          
+        UNUserNotificationCenter.current().add(request)
+      }
+    }
+  }
+
+  func standardUserDriverDidReceiveUserAttention(forUpdate update: SUAppcastItem) {
+    // Clear the dock badge indicator for the update
+    NSApp.dockTile.badgeLabel = ""
+      
+    // Dismiss active update notifications if the user has given attention to the new update
+    UNUserNotificationCenter.current().removeDeliveredNotifications(withIdentifiers: [UPDATE_NOTIFICATION_IDENTIFIER])
+  }
+  
+  func standardUserDriverWillFinishUpdateSession() {
+    AppDelegate.log.info(" >>> standardUserDriverWillFinishUpdateSession")
+    // We will dismiss our gentle UI indicator if the user session for the update finishes
+    /*
+    titlebarAccessoryViewController?.removeFromParent()
+    titlebarAccessoryViewController = nil
+     */
+    // Put app back in background when the user session for the update finished.
+    // We don't have a convenient reason for the user to easily activate the app now.
+    // Note this assumes there's no other windows for the app to show
+    NSApp.setActivationPolicy(.accessory)
+  }
+  
+  // MARK: SPUUpdaterDelegate
+  
+  // Request for permissions to publish notifications for update alerts
+  // This delegate method will be called when Sparkle schedules an update check in the future,
+  // which may be a good time to request for update permission. This will be after the user has allowed
+  // Sparkle to check for updates automatically. If you need to publish notifications for other reasons,
+  // then you may have a more ideal time to request for notification authorization unrelated to update checking.
+  func updater(_ updater: SPUUpdater, willScheduleUpdateCheckAfterDelay delay: TimeInterval) {
+    UNUserNotificationCenter.current().requestAuthorization(options: [.badge, .alert, .sound]) { granted, error in
+      AppDelegate.log.info("Notification granted \(granted), error \(error)")
+      // Examine granted outcome and error if desired...
+    }
+  }
+
+  // MARK: UNUserNotificationCenterDelegate
+  
+  func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+    if response.notification.request.identifier == UPDATE_NOTIFICATION_IDENTIFIER && response.actionIdentifier == UNNotificationDefaultActionIdentifier {
+      // If the notificaton is clicked on, make sure we bring the update in focus
+      // If the app is terminated while the notification is clicked on,
+      // this will launch the application and perform a new update check.
+      // This can be more likely to occur if the notification alert style is Alert rather than Banner
+      updaterController.checkForUpdates(nil)
+    }
+      
+    completionHandler()
   }
 }
