@@ -63,8 +63,13 @@ From project's root directory (~/src/AutoPing):
   * xcrun notarytool submit releases/AutoPing\ ${VERSION}.dmg --keychain-profile "notarytool-password" --wait --webhook "https://example.com/notarization"
   * xcrun stapler staple releases/AutoPing\ ${VERSION}.dmg
 * syspolicy_check distribution releases/AutoPing\ ${VERSION}.dmg
+* mv releases/AutoPing\ ${VERSION}.dmg releases/AutoPing_${VERSION}.dmg
 * $(xcodebuild -showBuildSettings -scheme AutoPing -json 2> /dev/null | jq -r '.[0].buildSettings.BUILD_DIR')/../../SourcePackages/artifacts/sparkle/Sparkle/bin/generate_appcast --full-release-notes-url=https://github.com/alexkhesin/AutoPing/blob/main/releases/AutoPing.html --link=https://github.com/alexkhesin/AutoPing --download-url-prefix=https://github.com/alexkhesin/AutoPing/releases/download/${VERSION}/ releases
 * xmlstarlet ed -L -a /rss/channel/item/sparkle:fullReleaseNotesLink -t elem -n sparkle:releaseNotesLink -v "https://github.com/alexkhesin/AutoPing/blob/main/releases/AutoPing.html" releases/appcast.xml
+* submit appropriate files via git
+* git tag ${VERSION} -m "Release version ${VERSION}"  
+* git push --tags
+* create release in github and upload .dmg and .delta
 
 TODO:
 
