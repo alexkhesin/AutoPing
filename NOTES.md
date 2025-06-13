@@ -64,8 +64,8 @@ From project's root directory (~/src/AutoPing):
   * xcrun stapler staple releases/AutoPing\ ${VERSION}.dmg
 * syspolicy_check distribution releases/AutoPing\ ${VERSION}.dmg
 * mv releases/AutoPing\ ${VERSION}.dmg releases/AutoPing_${VERSION}.dmg
-* # --maximum-versions=1 because --download-url-prefix includes version number, invalidating paths for previous versions
 * $(xcodebuild -showBuildSettings -scheme AutoPing -json 2> /dev/null | jq -r '.[0].buildSettings.BUILD_DIR')/../../SourcePackages/artifacts/sparkle/Sparkle/bin/generate_appcast --full-release-notes-url=https://alexkhesin.github.io/AutoPing/ReleaseNotes.html --link=https://github.com/alexkhesin/AutoPing --download-url-prefix=https://github.com/alexkhesin/AutoPing/releases/download/${VERSION}/ --maximum-versions=1 releases -o ./appcast.xml
+  * (--maximum-versions=1 because --download-url-prefix includes version number, invalidating paths for previous versions)
 * xmlstarlet ed -L -a /rss/channel/item/sparkle:fullReleaseNotesLink -t elem -n sparkle:releaseNotesLink -v "https://alexkhesin.github.io/AutoPing/ReleaseNotes.html" ./appcast.xml
 * submit appropriate files via git
 * git tag ${VERSION} -m "Release version ${VERSION}"  
