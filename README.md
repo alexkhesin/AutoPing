@@ -1,6 +1,6 @@
 # AutoPing
 
-[![states](states.png)](https://github.com/alexkhesin/AutoPing/releases)
+[![states](assets/states.png)](https://github.com/alexkhesin/AutoPing/releases)
 
 A macOS menu bar widget which shows a weighted moving average of recent ping times and
 packet loss (percentage of failed pings) if any, helpful for monitoring health of a
