@@ -7,8 +7,7 @@
 // TODO: better colors https://developer.apple.com/design/human-interface-guidelines/macos/visual-design/color/
 // TODO: instead of try?, show errors from SMAppService.mainApp.register
 // TODO: make TextField in SettingsView be focused and respond to Cmd+A
-
-// Need to worry about multithreading? https://lists.apple.com/archives/macnetworkprog/2009/Feb/msg00047.html can be interpreted as saying that CFSocket polls on a single thread and thus all (most? non-error?) SimpePing calbacks should be delivered on a single thread
+// TODO: Need to worry about multithreading? https://lists.apple.com/archives/macnetworkprog/2009/Feb/msg00047.html can be interpreted as saying that CFSocket polls on a single thread and thus all (most? non-error?) SimpePing calbacks should be delivered on a single thread
 
 // 2025-05-04: evaluated SwiftyPing library. Critical flaw is that it only allows one outstanding ping at a time because
 //  it keeps ping start time (sequenceStart) in a local variable instead of sending it with ICMP packets. This
@@ -33,11 +32,32 @@ struct SettingsView: View {
   @AppStorage("hostName") static var hostName = "8.8.8.8"
   // This is not AppStorage because it is "stored" via System Settings vis SMAppService
   @State private var launchAtLogin = false
+
+  // Similar here, it is stored by Sparkle
+  private let updater: SPUUpdater
+  @State private var automaticallyChecksForUpdates: Bool
+  @State private var automaticallyDownloadsUpdates: Bool
+
+  init(_ updater: SPUUpdater) {
+    self.updater = updater
+    self.automaticallyChecksForUpdates = updater.automaticallyChecksForUpdates
+    self.automaticallyDownloadsUpdates = updater.automaticallyDownloadsUpdates
+    AppDelegate.log.info(">>>> updateCheckInterval \(updater.updateCheckInterval)")
+  }
   
   var body: some View {
     Form {
       TextField("Host or IP", text: SettingsView.$hostName)
       Toggle("Launch at login", isOn: $launchAtLogin).toggleStyle(.switch)
+      Toggle("Automatically check for updates", isOn: $automaticallyChecksForUpdates).toggleStyle(.switch)
+        .onChange(of: automaticallyChecksForUpdates) { _, newValue in
+            updater.automaticallyChecksForUpdates = newValue
+        }
+      Toggle("Automatically download updates", isOn: $automaticallyDownloadsUpdates).toggleStyle(.switch)
+        .disabled(!automaticallyChecksForUpdates)
+        .onChange(of: automaticallyDownloadsUpdates) { _, newValue in
+            updater.automaticallyDownloadsUpdates = newValue
+        }
     }
     .padding()
     .frame(minWidth: 300) // Set a minimum size for the window
@@ -58,13 +78,16 @@ struct SettingsView: View {
     }
   }
 }
-#Preview { SettingsView() }
+// how to provide SPUUpdater?
+// #Preview { SettingsView() }
 
 class AppDelegate : NSObject, NSApplicationDelegate {
   static let log = Logger(subsystem: Bundle.main.bundleIdentifier!, category: "default")
   private let statusBarItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
+  private var updatesMenuItem: NSMenuItem!
   private var updaterController: SPUStandardUpdaterController!
-
+  private var signalUpdateAvailable = false
+  
   override init() {
     super.init()
     // Initialize the updater controller, which handles the Sparkle updater
@@ -72,24 +95,26 @@ class AppDelegate : NSObject, NSApplicationDelegate {
   }
 
   func applicationDidFinishLaunching(_ notification: Notification) {
+    /* -- cannot make icon work
+    // Make the app run in the background
+    NSApp.setActivationPolicy(.accessory)
+     */
+    UNUserNotificationCenter.current().delegate = self
+    
     let menu = NSMenu()
     menu.addItem(NSMenuItem(title: "Preferences",
                             action: #selector(preferencesAction(_:)),
                             keyEquivalent: ""))
-    let m = NSMenuItem(title: "Check for Updates",
+    updatesMenuItem = NSMenuItem(title: "Check for Updates",
                        action: #selector(SPUStandardUpdaterController.checkForUpdates(_:)),
                        keyEquivalent: "")
-    m.target = updaterController
-    menu.addItem(m)
+    updatesMenuItem.target = updaterController
+    menu.addItem(updatesMenuItem)
     menu.addItem(NSMenuItem(title: "Quit",
                             action: #selector(quitAction(_:)),
                             keyEquivalent: ""))
     
     statusBarItem.menu = menu
-    
-    // Make the app run in the background
-    NSApp.setActivationPolicy(.accessory)
-    UNUserNotificationCenter.current().delegate = self
     
     showPingData(avg: -1, percentFailed: 0)  // draw infinity at first
     start()
@@ -97,10 +122,6 @@ class AppDelegate : NSObject, NSApplicationDelegate {
   
   @objc private func preferencesAction(_ sender: Any?) {
     showPreferences()
-  }
-
-  @objc private func updatesAction(_ sender: Any?) {
-    // showPreferences()
   }
 
   @objc private func quitAction(_ sender: Any?) {
@@ -136,7 +157,7 @@ extension AppDelegate : PingDisplay {
     enum Level { case ok, warning, broken }
     var level = Level.ok
     if avg == -1 {
-      s = "\u{221e}"  // infinity sigb
+      s = "\u{221e}"  // infinity sign
       level = Level.broken
     } else {
       s = "\(avg) ms"
@@ -155,6 +176,11 @@ extension AppDelegate : PingDisplay {
     // Orange looks better than red or yellow on my screen, but really
     // TODO: how do I do it properly?
     let color : NSColor = {
+      if signalUpdateAvailable {
+        // Don't mess with foreground if because we'll use systemOrange background
+        return NSColor.controlTextColor
+      }
+      
       switch level {
       case .ok: return NSColor.controlTextColor
       case .warning: return NSColor.systemOrange
@@ -162,16 +188,25 @@ extension AppDelegate : PingDisplay {
       }
     }()
     
-    let button = statusBarItem.button!
-    button.attributedTitle = NSAttributedString(
+    let title = NSMutableAttributedString(
       string: s,
       attributes: [
         NSAttributedString.Key.font: singleLine ? AppDelegate.fontOneLine : AppDelegate.fontTwoLines,
         NSAttributedString.Key.foregroundColor : color,
+        // NSAttributedString.Key.backgroundColor : nil,
         NSAttributedString.Key.paragraphStyle : singleLine ? AppDelegate.styleOneLine : AppDelegate.styleTwoLines,
         // TODO: No idea why -4 happens to work, and whether it may break
         // in future versions. Something complicated about autolayout.
         NSAttributedString.Key.baselineOffset: singleLine ? 0 : -4])
+    if signalUpdateAvailable {
+      title.addAttribute(.backgroundColor, value: NSColor.systemOrange, range: NSRange(location: 0, length: title.length))
+    }
+    
+    statusBarItem.button!.attributedTitle = title
+
+    /* -- cannot make icon work
+    print("Activation policy: \(NSApp.activationPolicy())")
+    */
   }
   
   static let fontOneLine = NSFont.menuBarFont(ofSize:0)  // default size
@@ -203,7 +238,7 @@ extension AppDelegate : NSWindowDelegate {
     }
     
     // Create an NSHostingController to host SettingsView
-    self.settingsWindowHostingController = NSHostingController(rootView: SettingsView())
+    self.settingsWindowHostingController = NSHostingController(rootView: SettingsView(updaterController.updater))
     
     let window = NSWindow(
       // contentRect does not seem to matter, the size appears to be determined by
@@ -264,42 +299,22 @@ extension AppDelegate : SPUUpdaterDelegate, SPUStandardUserDriverDelegate, UNUse
   }
 
   func standardUserDriverWillHandleShowingUpdate(_ handleShowingUpdate: Bool, forUpdate update: SUAppcastItem, state: SPUUserUpdateState) {
-    AppDelegate.log.info(">>> standardUserDriverWillHandleShowingUpdate: \(handleShowingUpdate), \(state.userInitiated)")
-    /*
-    // We will ignore updates that the user driver will handle showing
-    // This includes user initiated (non-scheduled) updates
-    guard !handleShowingUpdate else {
-      return
-    }
-     
-    // Attach a gentle UI indicator on our window
-    do {
-      let updateButton = NSButton(frame: NSMakeRect(0, 0, 120, 100))
-      updateButton.title = "v\(update.displayVersionString) Available"
-      updateButton.bezelStyle = .recessed
-      updateButton.target = updaterController
-      updateButton.action = #selector(updaterController.checkForUpdates(_:))
-          
-      let accessoryViewController = NSTitlebarAccessoryViewController()
-      accessoryViewController.layoutAttribute = .right
-      accessoryViewController.view = updateButton
-          
-      self.window.addTitlebarAccessoryViewController(accessoryViewController)
-          
-      titlebarAccessoryViewController = accessoryViewController
-    }
-    */
-
+    AppDelegate.log.info(">>> standardUserDriverWillHandleShowingUpdate: handleShowingUpdate \(handleShowingUpdate), userInitiated \(state.userInitiated)")
+    /* -- cannot make icon work
     // When an update alert will be presented, place the app in the foreground
     // We will do this for updates the user initiated themselves too for consistency
     // When we later post a notification, the act of clicking a notification will also change the app
     // to have a regular activation policy. For consistency, we should do this if the user
     // does not click on the notification too.
     NSApp.setActivationPolicy(.regular)
-    
+    */
+
     if (!state.userInitiated) {
+      signalUpdateAvailable = true
+      /* -- cannot make icon work
       // And add a badge to the app's dock icon indicating one alert occurred
       NSApp.dockTile.badgeLabel = "1"
+      */
       
       // Post a user notification
       // For banner style notification alerts, this may only trigger when the app is currently inactive.
@@ -317,24 +332,33 @@ extension AppDelegate : SPUUpdaterDelegate, SPUStandardUserDriverDelegate, UNUse
   }
 
   func standardUserDriverDidReceiveUserAttention(forUpdate update: SUAppcastItem) {
+    AppDelegate.log.info(">>> standardUserDriverDidReceiveUserAttention()")
+    
+    signalUpdateAvailable = false
+
+    /* -- cannot make icon work
     // Clear the dock badge indicator for the update
     NSApp.dockTile.badgeLabel = ""
+    */
       
     // Dismiss active update notifications if the user has given attention to the new update
     UNUserNotificationCenter.current().removeDeliveredNotifications(withIdentifiers: [UPDATE_NOTIFICATION_IDENTIFIER])
   }
   
   func standardUserDriverWillFinishUpdateSession() {
-    AppDelegate.log.info(" >>> standardUserDriverWillFinishUpdateSession")
+    AppDelegate.log.info(">>> standardUserDriverWillFinishUpdateSession")
     // We will dismiss our gentle UI indicator if the user session for the update finishes
     /*
     titlebarAccessoryViewController?.removeFromParent()
     titlebarAccessoryViewController = nil
      */
+    /* -- cannot make icon work
     // Put app back in background when the user session for the update finished.
     // We don't have a convenient reason for the user to easily activate the app now.
     // Note this assumes there's no other windows for the app to show
     NSApp.setActivationPolicy(.accessory)
+    */
+    // Do I need to do anything here?
   }
   
   // MARK: SPUUpdaterDelegate
@@ -351,9 +375,14 @@ extension AppDelegate : SPUUpdaterDelegate, SPUStandardUserDriverDelegate, UNUse
     }
   }
 
+  func updater(_ updater: SPUUpdater, didFindValidUpdate item: SUAppcastItem) {
+    updatesMenuItem.title = "Update to \(item.displayVersionString)"
+  }
+  
   // MARK: UNUserNotificationCenterDelegate
   
   func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+    AppDelegate.log.info(">>> userNotificationCenter \(response.notification.request.identifier) \(response.actionIdentifier) \(UNNotificationDefaultActionIdentifier)")
     if response.notification.request.identifier == UPDATE_NOTIFICATION_IDENTIFIER && response.actionIdentifier == UNNotificationDefaultActionIdentifier {
       // If the notificaton is clicked on, make sure we bring the update in focus
       // If the app is terminated while the notification is clicked on,
@@ -361,7 +390,7 @@ extension AppDelegate : SPUUpdaterDelegate, SPUStandardUserDriverDelegate, UNUse
       // This can be more likely to occur if the notification alert style is Alert rather than Banner
       updaterController.checkForUpdates(nil)
     }
-      
+    
     completionHandler()
   }
 }

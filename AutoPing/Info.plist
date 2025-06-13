@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>SUFeedURL</key>
-	<string>http://localhost:8080/appcast.xml</string>
+	<string>https://github.com/alexkhesin/AutoPing/blob/main/releases/appcast.xml</string>
 	<key>SUEnableInstallerLauncherService</key>
 	<string>YES</string>
 	<key>SUPublicEDKey</key>
