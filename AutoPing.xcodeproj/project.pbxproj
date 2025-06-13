@@ -13,6 +13,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		5A6F3C3F2DFBFDF000B23D16 /* ReleaseNotes.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = ReleaseNotes.html; sourceTree = "<group>"; };
 		5ABEBAA02DF49DCA0056398B /* AutoPing.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AutoPing.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5ABEBAB32DF49E330056398B /* NOTES.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = NOTES.md; sourceTree = "<group>"; };
 		5ABEBAB42DF49E330056398B /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
@@ -56,6 +57,7 @@
 		5ABEBA972DF49DCA0056398B = {
 			isa = PBXGroup;
 			children = (
+				5A6F3C3F2DFBFDF000B23D16 /* ReleaseNotes.html */,
 				5ABEBAB32DF49E330056398B /* NOTES.md */,
 				5ABEBAB42DF49E330056398B /* README.md */,
 				5ABEBAA22DF49DCA0056398B /* AutoPing */,
@@ -289,7 +291,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Developer ID Application";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=macosx*]" = 5H2NK6TXE8;
@@ -305,7 +307,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.1;
+				MARKETING_VERSION = 1.1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.khesin.autoping;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -326,7 +328,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Developer ID Application";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=macosx*]" = 5H2NK6TXE8;
@@ -342,7 +344,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.1;
+				MARKETING_VERSION = 1.1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.khesin.autoping;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

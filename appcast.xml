@@ -3,15 +3,18 @@
   <channel>
     <title>AutoPing</title>
     <item>
-      <title>1.1</title>
-      <pubDate>Fri, 13 Jun 2025 02:20:29 -0400</pubDate>
+      <title>1.1.1</title>
+      <pubDate>Fri, 13 Jun 2025 09:45:54 -0400</pubDate>
       <link>https://github.com/alexkhesin/AutoPing</link>
       <sparkle:fullReleaseNotesLink>https://alexkhesin.github.io/AutoPing/ReleaseNotes.html</sparkle:fullReleaseNotesLink>
       <sparkle:releaseNotesLink>https://alexkhesin.github.io/AutoPing/ReleaseNotes.html</sparkle:releaseNotesLink>
-      <sparkle:version>2</sparkle:version>
-      <sparkle:shortVersionString>1.1</sparkle:shortVersionString>
+      <sparkle:version>3</sparkle:version>
+      <sparkle:shortVersionString>1.1.1</sparkle:shortVersionString>
       <sparkle:minimumSystemVersion>15.5</sparkle:minimumSystemVersion>
-      <enclosure url="https://github.com/alexkhesin/AutoPing/releases/download/1.1/AutoPing_1.1.dmg" length="3727274" type="application/octet-stream" sparkle:edSignature="W5IdNPpU+/E5su3qo2Z9vefEZcXTuGQnlQJ8kmUO0XQBzIpQX0DxlwthOvR65S83hGmwnMljD5HSSU6xqixgAA=="/>
+      <enclosure url="https://github.com/alexkhesin/AutoPing/releases/download/1.1.1/AutoPing_1.1.1.dmg" length="3727849" type="application/octet-stream" sparkle:edSignature="ovpjZLBc1eWL6xXkHYtJZai0E2mlm9viMiufQpbhu61M1T3nW/V7x3LaIOcgE2ykugZ6xDGPAFVlnIenNevnAw=="/>
+      <sparkle:deltas>
+        <enclosure url="https://github.com/alexkhesin/AutoPing/releases/download/1.1.1/AutoPing3-2.delta" sparkle:deltaFrom="2" length="11554" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="864864" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,en" sparkle:edSignature="bfoAnx0T5gJNtV8P/jY1hJ0kMFPnpLLvVWbT2xekRwjnFy14YO00YOnQxb08NVf/6gqmwXAdU5qbhBevxmiMAw=="/>
+      </sparkle:deltas>
     </item>
   </channel>
 </rss>
