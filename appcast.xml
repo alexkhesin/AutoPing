@@ -1,19 +1,17 @@
 <?xml version="1.0" standalone="yes"?>
 <rss xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" version="2.0">
-    <channel>
-        <title>AutoPing</title>
-        <item>
-            <title>1.1.1</title>
-            <pubDate>Fri, 13 Jun 2025 00:29:15 -0400</pubDate>
-            <link>https://github.com/alexkhesin/AutoPing</link>
-            <sparkle:fullReleaseNotesLink>https://raw.githubusercontent.com/alexkhesin/AutoPing/refs/heads/main/releases/AutoPing.html</sparkle:fullReleaseNotesLink>
-            <sparkle:version>3</sparkle:version>
-            <sparkle:shortVersionString>1.1.1</sparkle:shortVersionString>
-            <sparkle:minimumSystemVersion>15.5</sparkle:minimumSystemVersion>
-            <enclosure url="https://github.com/alexkhesin/AutoPing/releases/download/1.1.1/AutoPing_1.1.1.dmg" length="3728076" type="application/octet-stream" sparkle:edSignature="X+mW3jcigBntvhbD2MKfrmv6saJAxsvOvGbxBYksRj6+BcJtgDgkJ8s6aZAJDzqzau/ZM05roU7f1r43UMXwCg=="/>
-            <sparkle:deltas>
-                <enclosure url="https://github.com/alexkhesin/AutoPing/releases/download/1.1.1/AutoPing3-2.delta" sparkle:deltaFrom="2" length="12158" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="864864" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,en" sparkle:edSignature="VUrjIMmwpCT882ZmeXcJgTY08DzVObGCiQGDr/9NUIrOsStDJwokykgrjEnOYTkuTz2p2p/yjngdBUx4FGvKDA=="/>
-            </sparkle:deltas>
-        </item>
-    </channel>
+  <channel>
+    <title>AutoPing</title>
+    <item>
+      <title>1.1</title>
+      <pubDate>Fri, 13 Jun 2025 02:20:29 -0400</pubDate>
+      <link>https://github.com/alexkhesin/AutoPing</link>
+      <sparkle:fullReleaseNotesLink>https://alexkhesin.github.io/AutoPing/ReleaseNotes.html</sparkle:fullReleaseNotesLink>
+      <sparkle:releaseNotesLink>https://alexkhesin.github.io/AutoPing/ReleaseNotes.html</sparkle:releaseNotesLink>
+      <sparkle:version>2</sparkle:version>
+      <sparkle:shortVersionString>1.1</sparkle:shortVersionString>
+      <sparkle:minimumSystemVersion>15.5</sparkle:minimumSystemVersion>
+      <enclosure url="https://github.com/alexkhesin/AutoPing/releases/download/1.1/AutoPing_1.1.dmg" length="3727274" type="application/octet-stream" sparkle:edSignature="W5IdNPpU+/E5su3qo2Z9vefEZcXTuGQnlQJ8kmUO0XQBzIpQX0DxlwthOvR65S83hGmwnMljD5HSSU6xqixgAA=="/>
+    </item>
+  </channel>
 </rss>
