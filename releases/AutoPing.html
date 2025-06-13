@@ -1,0 +1,39 @@
+<html>
+  <head>
+    <style>
+      div.sparkle-installed-version { opacity: 0.5; }
+      div.sparkle-installed-version ~ div { display: none; }
+      ul { margin-top: 0px; }
+    </style>
+  </head>
+
+  <body>
+    <p>Welcome to AutoPing.</p>
+
+    <p>
+      The main website is <a href="https://github.com/alexkhesin/AutoPing">https://github.com/alexkhesin/AutoPing</a>. Please use
+      <a href="https://github.com/alexkhesin/AutoPing/issues">https://github.com/alexkhesin/AutoPing/issues</a>
+      for bug reports.
+    </p>
+
+    <!-- Using <div> because <ul> cannot be inside of <p>.
+         See https://sparkle-project.org/documentation/publishing/ for
+         the explanation of data-sparkle-version
+      -->
+    <div data-sparkle-version="3">
+      New in 1.0.2
+      <ul><li>Bumped the version to test updating via Sparkle.</li></ul>
+    </div>
+
+    <div data-sparkle-version="2">
+      New in 1.0.1
+      <ul><li>Added Sparkle 2 framework for distributing updates.</li></ul>
+    </div>
+
+    <div data-sparkle-version="1">
+      New in 1.0.0
+      <ul><li>Initial release. This code has been in use for almost 10 years, finally
+          got around to publishing it.</li></ul>
+    </div>
+  </body>
+</html>
