@@ -81,6 +81,8 @@ From project's root directory (~/src/AutoPing):
 * Automate this mess:
   * https://developer.apple.com/documentation/security/notarizing-macos-software-before-distribution
   * https://developer.apple.com/documentation/security/customizing-the-xcode-archive-process
+  * Sample workflows:
+    * https://github.com/TheAcharya/MarkerData/tree/main/.github/workflows
 
 * publish on AppStore? https://defn.io/2023/10/22/distributing-mac-app-store-apps-with-github-actions/
 
