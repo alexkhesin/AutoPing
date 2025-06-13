@@ -18,7 +18,7 @@ to interact with the gadget and select the "Update to \<version\>" menu item to 
 
 ## Installation
 
-To install, please download a .dmg file from the latest release at https://github.com/alexkhesin/AutoPing/releases.
+To install, please download a .dmg file from the latest release at [https://github.com/alexkhesin/AutoPing/releases](https://github.com/alexkhesin/AutoPing/releases).
 
 Select "Launch at Login" in Preferences to continue running after a reboot.
 
