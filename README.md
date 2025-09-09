@@ -11,7 +11,7 @@ which was published in the 2010s by Memset and is no longer available.
 AutoPing uses the [Sparkle 2 framework](https://sparkle-project.org/) framework to manage updates.
 If the "Automatically download" option is selected, updates will happen in the background and become
 operational upon restart of the application or the computer. If this option is not selected, the
-background color of the menubar item will turn orange when updates become available, prompting users
+background color of the menu bar widget will turn orange when updates become available, prompting users
 to select the "update to \<most recent version\>" menu item to update it.
 
 ![when update detected](assets/updated.png)
