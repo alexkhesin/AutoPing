@@ -2,7 +2,7 @@
 
 [![different states](assets/states.png)](https://github.com/alexkhesin/AutoPing/releases)
 
-AutoPing is a macOS menu bar widget that shows the current quality of your internet connection.
+AutoPing is a macOS menu bar widget that shows the current quality of a computer’s internet connection.
 It measures connection quality using a weighted average of ping durations and percentage of failed
 pings, calculated over the previous 30 seconds. Inspiration for this program was drawn from a
 [similar application](https://web.archive.org/web/20160410212547/https://itunes.apple.com/gb/app/autoping/id632347870?mt=12)
