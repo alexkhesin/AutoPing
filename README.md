@@ -25,7 +25,8 @@ Select "Launch at Login" in Preferences to continue running after a reboot.
 Minimum required macOS version is 15.5 (due to what I am running on my laptop).
 Happy to take contributions that make it work on earlier versions.
 
-
+## Stats
+[![GitHub Downloads](https://img.shields.io/github/downloads/alexkhesin/AutoPing/total.svg)](https://github.com/alexkhesin/AutoPing/releases)
 
 
 
