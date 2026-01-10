@@ -1,3 +1,2 @@
 *.~undo-tree~
-releases/*.dmg
-releases/*.delta
+releases/
