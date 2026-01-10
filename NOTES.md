@@ -57,6 +57,7 @@ From project's root directory (~/src/AutoPing):
 * Product/Archive
 * Distribute for Direct Distribution
 * Export Notarized App to ~/Downloads
+* Edit ReleaseNotes.html
 * `xcrun stapler staple ~/Downloads/AutoPing.app` (because https://developer.apple.com/documentation/security/customizing-the-notarization-workflow#Staple-the-ticket-to-your-distribution)
 * `create-dmg ~/Downloads/AutoPing.app releases`
 * `VERSION=1.0.1` (or whatever create-dmg says it is)
