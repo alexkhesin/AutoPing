@@ -14,10 +14,13 @@ class PingData {
   let seq: UInt16?
   var status: PingStatus
   var msec: Int = 0
+  // Send time we put in the packet payload; replies must echo it back exactly.
+  var sentNano: UInt64?
   
-  init(seq: UInt16?, status: PingStatus) {
+  init(seq: UInt16?, status: PingStatus, sentNano: UInt64? = nil) {
     self.seq = seq
     self.status = status
+    self.sentNano = sentNano
   }
 }
 
@@ -33,6 +36,8 @@ class PingManager : NSObject {
   var pinger: SimplePing!
   var timer: Timer?
   var maxSeq: UInt16 = 0
+  // Payload of the packet currently being sent; read by the sent() callback.
+  private var pendingSentNano: UInt64?
 
   init(_ pingDisplay: PingDisplay, _ hostName: String) {
     self.pingDisplay = pingDisplay
@@ -139,7 +144,7 @@ class PingManager : NSObject {
     return withUnsafeBytes(of: val) { Data($0) }
   }
   static func parsePacket(_ data: Data) -> UInt64 {
-    return data.withUnsafeBytes { $0.load(as: UInt64.self) }
+    return data.withUnsafeBytes { $0.loadUnaligned(as: UInt64.self) }
   }
   
   // Return -1 if cannot find successful pings.
@@ -186,7 +191,9 @@ class PingManager : NSObject {
   func sendPing() {
     guard let pinger = self.pinger else { return }
     let start_nano: UInt64 = DispatchTime.now().uptimeNanoseconds
+    pendingSentNano = start_nano
     pinger.send(with: PingManager.makePacket(start_nano))
+    pendingSentNano = nil
   }
 
   func findPingData(_ seq:UInt16) -> PingData? {
@@ -226,7 +233,7 @@ extension PingManager {
   
   func sent(_ packet: Data, _ sequenceNumber: UInt16) {
     maxSeq = sequenceNumber
-    ringBuffer.put(PingData(seq: sequenceNumber, status: .pending))
+    ringBuffer.put(PingData(seq: sequenceNumber, status: .pending, sentNano: pendingSentNano))
     showPingInfo()
     AppDelegate.log.debug("seq #\(sequenceNumber) sent")
   }
@@ -247,16 +254,22 @@ extension PingManager {
       AppDelegate.log.error("wrong response size: \(sequenceNumber) received, size=\(response.count)")
       return
     }
+    // The payload comes off the network, so don't trust it: it must match the
+    // timestamp we sent for this sequence number, and must not be in the future
+    // (a larger value would underflow the subtraction below and crash).
     let start_nano = PingManager.parsePacket(response)
     let end_nano : UInt64 = DispatchTime.now().uptimeNanoseconds
-    let diff_nano = (end_nano - start_nano);
-    let diff_msec = Int(Double(diff_nano) / 1e6)
+    guard let pd = findPingData(sequenceNumber),
+          pd.sentNano == start_nano,
+          start_nano <= end_nano else {
+      AppDelegate.log.error("seq #\(sequenceNumber) reply does not match a ping we sent, ignoring")
+      return
+    }
+    let diff_msec = Int(Double(end_nano - start_nano) / 1e6)
     AppDelegate.log.debug("seq #\(sequenceNumber) received, size=\(response.count) msec=\(diff_msec)")
 
-    let pd = findPingData(sequenceNumber)
-    AppDelegate.log.debug("found seq #\(sequenceNumber) \(pd != nil)")
-    pd?.msec = diff_msec
-    pd?.status = PingStatus.success
+    pd.msec = diff_msec
+    pd.status = PingStatus.success
     showPingInfo()
   }
   func unexpected(_ packet: Data) {
