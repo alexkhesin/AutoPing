@@ -184,8 +184,9 @@ class PingManager : NSObject {
   }
   
   func sendPing() {
+    guard let pinger = self.pinger else { return }
     let start_nano: UInt64 = DispatchTime.now().uptimeNanoseconds
-    self.pinger.send(with: PingManager.makePacket(start_nano))
+    pinger.send(with: PingManager.makePacket(start_nano))
   }
 
   func findPingData(_ seq:UInt16) -> PingData? {
@@ -206,8 +207,9 @@ extension PingManager {
     self.sendPing()
         
     // And start a timer to send the subsequent pings.
-    self.timer = Timer.scheduledTimer(withTimeInterval: PingManager.pingInterval, repeats: true) { timer in
-      self.sendPing()
+    self.timer?.invalidate()
+    self.timer = Timer.scheduledTimer(withTimeInterval: PingManager.pingInterval, repeats: true) { [weak self] _ in
+      self?.sendPing()
     }
   }
   func startFailed(_ error: Error) {
@@ -216,8 +218,10 @@ extension PingManager {
     ringBuffer.put(PingData(seq: nil, status: .failure))
     showPingInfo()
         
-    // Retry starting
-    timer = Timer.scheduledTimer(timeInterval: PingManager.pingInterval, target: pinger!, selector: #selector(SimplePing.start), userInfo: nil, repeats: false)
+    // Retry starting. Stop the send timer first, otherwise it keeps firing on a stopped pinger.
+    timer?.invalidate()
+    guard let pinger = self.pinger else { return }
+    timer = Timer.scheduledTimer(timeInterval: PingManager.pingInterval, target: pinger, selector: #selector(SimplePing.start), userInfo: nil, repeats: false)
   }
   
   func sent(_ packet: Data, _ sequenceNumber: UInt16) {
