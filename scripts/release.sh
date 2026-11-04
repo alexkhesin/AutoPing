@@ -260,6 +260,16 @@ publish() {
   [ -f "$ac" ] || die "nothing built for $VERSION; run build first"
   [ "$(setting MARKETING_VERSION)" = "$VERSION" ] || die "project version is not $VERSION"
   only_changed ReleaseNotes.html "$PBXPROJ"
+  # publish makes the commits itself, in an order that keeps the live files
+  # consistent, so build's changes must still be uncommitted.
+  local changed
+  changed=" $(jj diff --name-only | tr '\n' ' ')"
+  for f in "$PBXPROJ" ReleaseNotes.html; do
+    case $changed in
+      *" $f "*) ;;
+      *) die "$f has no uncommitted changes. publish commits build's changes itself; if you committed them by hand, move them back into the working copy (jj squash --from <that commit> --into @) first" ;;
+    esac
+  done
   cmp -s ReleaseNotes.html "$OUT/ReleaseNotes.html" ||
     die "ReleaseNotes.html changed since build, so its signature in the appcast no longer matches; delete $OUT, run jj restore $PBXPROJ, and build again"
   read_assets
