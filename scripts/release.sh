@@ -5,14 +5,16 @@
 #   scripts/release.sh publish VERSION
 #
 # build    Bumps the version, archives, notarizes, and makes the DMG, delta
-#          updates and signed appcast. Nothing leaves this Mac, so the update
-#          can be tested before publishing.
+#          updates and appcast, and signs the appcast and ReleaseNotes.html
+#          (the app requires both to be signed). Nothing leaves this Mac, so
+#          the update can be tested first (scripts/update-test.sh).
 # publish  Commits, tags and pushes, creates the GitHub release, checks that
-#          the downloads work, and only then publishes the appcast (GitHub
-#          Pages serves it from main), so users are never offered an update
-#          whose files aren't online yet.
+#          the downloads work, and only then publishes the appcast together
+#          with ReleaseNotes.html (GitHub Pages serves both from main), so
+#          users are never offered an update whose files aren't online yet.
 #
-# Edit ReleaseNotes.html before running build. One-time setup is in NOTES.md.
+# Edit ReleaseNotes.html before running build, and not between build and
+# publish: its signature is in the appcast. One-time setup is in NOTES.md.
 # --no-deltas: ship only the full DMG. Needed when SUPublicEDKey changes,
 # because delta updates are always checked against the old key.
 set -euo pipefail
@@ -171,6 +173,7 @@ EOF
   has "^TeamIdentifier=$TEAM_ID$" codesign -dv "$app" || die "app is not signed by team $TEAM_ID"
   has "flags=.*runtime" codesign -dv "$app" || die "app is not signed with the hardened runtime"
   echo "SUPublicEDKey: $(plist SUPublicEDKey "$info")"
+  echo "SURequireSignedFeed: $(plist SURequireSignedFeed "$info" 2>/dev/null || echo NO)"
   echo "Sparkle: $(plist CFBundleShortVersionString "$app/Contents/Frameworks/Sparkle.framework/Resources/Info.plist")"
 
   step "Notarize and staple the app"
@@ -205,18 +208,34 @@ EOF
     --link="https://github.com/$REPO" \
     --maximum-versions=1 \
     -o "$OUT/appcast.xml" "$ASSET_DIR"
-  # Also show the release notes in the update dialog, not only under "Version History".
-  python3 -I - "$OUT/appcast.xml" "$SITE/ReleaseNotes.html" <<'PY'
+
+  # Sign ReleaseNotes.html. The first time, sign_update also adds a warning
+  # comment to the top of the file, so the signed copy is what gets published.
+  local notes_sig
+  notes_sig=$(op read "$SPARKLE_KEY_REF" | "$SPARKLE_BIN/sign_update" --ed-key-file - ReleaseNotes.html | grep 'sparkle:edSignature=') || true
+  [[ $notes_sig =~ ^sparkle:edSignature=\"[A-Za-z0-9+/=]+\"\ sparkle:length=\"[0-9]+\"$ ]] ||
+    die "unexpected sign_update output for ReleaseNotes.html: '$notes_sig'"
+  cp ReleaseNotes.html "$OUT/ReleaseNotes.html"
+
+  # Also show the release notes in the update dialog, not only under "Version
+  # History", with their signature.
+  python3 -I - "$OUT/appcast.xml" "$SITE/ReleaseNotes.html" "$notes_sig" <<'PY'
 import re, sys
-path, url = sys.argv[1:]
+path, url, sig = sys.argv[1:]
 s = open(path).read()
-if "<sparkle:releaseNotesLink>" not in s:
-    s, n = re.subn(r"(\n([ \t]*)<sparkle:fullReleaseNotesLink>[^<]*</sparkle:fullReleaseNotesLink>)",
-                   lambda m: m.group(1) + "\n" + m.group(2) + "<sparkle:releaseNotesLink>" + url + "</sparkle:releaseNotesLink>", s)
-    if n != 1:
-        sys.exit("could not add releaseNotesLink to the appcast")
+if "<sparkle:releaseNotesLink" in s:
+    sys.exit("appcast already has a releaseNotesLink")
+s, n = re.subn(r"(\n([ \t]*)<sparkle:fullReleaseNotesLink>[^<]*</sparkle:fullReleaseNotesLink>)",
+               lambda m: m.group(1) + "\n" + m.group(2) + "<sparkle:releaseNotesLink " + sig + ">" + url + "</sparkle:releaseNotesLink>", s)
+if n != 1:
+    sys.exit("could not add releaseNotesLink to the appcast")
 open(path, "w").write(s)
 PY
+  # Sign the finished appcast (replacing any signature generate_appcast added
+  # before the edit above).
+  op read "$SPARKLE_KEY_REF" | "$SPARKLE_BIN/sign_update" --ed-key-file - "$OUT/appcast.xml" >/dev/null
+  has '<!-- sparkle-signatures:' cat "$OUT/appcast.xml" || die "appcast is not signed"
+
   local ac=$OUT/appcast.xml
   [ "$(grep -c '<item>' "$ac")" = 1 ] || die "appcast should have exactly one item"
   grep -q "<sparkle:version>$build_num</sparkle:version>" "$ac" || die "appcast has the wrong build number"
@@ -229,8 +248,8 @@ PY
   step "Built AutoPing $VERSION ($build_num)"
   echo "Files to upload:$ASSETS"
   echo "Appcast:         build/$VERSION/appcast.xml"
-  echo "Next: test the update, then run: scripts/release.sh publish $VERSION"
-  echo "To abandon: jj restore $PBXPROJ"
+  echo "Next: scripts/update-test.sh start $VERSION, then: scripts/release.sh publish $VERSION"
+  echo "To abandon: jj restore $PBXPROJ (ReleaseNotes.html now also carries a signing comment)"
 }
 
 publish() {
@@ -241,6 +260,8 @@ publish() {
   [ -f "$ac" ] || die "nothing built for $VERSION; run build first"
   [ "$(setting MARKETING_VERSION)" = "$VERSION" ] || die "project version is not $VERSION"
   only_changed ReleaseNotes.html "$PBXPROJ"
+  cmp -s ReleaseNotes.html "$OUT/ReleaseNotes.html" ||
+    die "ReleaseNotes.html changed since build, so its signature in the appcast no longer matches; delete $OUT, run jj restore $PBXPROJ, and build again"
   read_assets
   jj git fetch
   [ -n "$(jj log --no-graph -r 'main@origin & ::@' -T 'commit_id')" ] ||
@@ -250,15 +271,17 @@ publish() {
   step "About to publish AutoPing $VERSION"
   echo "Commits to push to main:"
   jj log --no-graph -r 'main@origin..@-' -T 'description.first_line() ++ "\n"' | sed 's/^/  /'
-  echo "  release $VERSION   (ReleaseNotes.html, version bump)"
-  echo "  appcast for $VERSION"
+  echo "  release $VERSION   (version bump)"
+  echo "  appcast and release notes for $VERSION"
   echo "Release assets:$ASSETS"
   local answer
   read -r -p "Publish? [y/N] " answer
   [ "$answer" = y ] || [ "$answer" = Y ] || die "cancelled"
 
   step "Commit, tag and push"
-  jj commit -m "release $VERSION"
+  # Only the version bump: ReleaseNotes.html must go live together with the
+  # appcast that carries its signature.
+  jj commit -m "release $VERSION" "$PBXPROJ"
   jj bookmark set main -r @-
   jj git push --bookmark main
   jj tag set "$VERSION" -r main
@@ -279,21 +302,24 @@ publish() {
     echo "ok $f ($got bytes)"
   done
 
-  step "Publish the appcast"
+  step "Publish the appcast and release notes"
   cp "$ac" appcast.xml
-  jj commit -m "appcast for $VERSION"
+  jj commit -m "appcast and release notes for $VERSION"
   jj bookmark set main -r @-
   jj git push --bookmark main
-  echo "Waiting for GitHub Pages to serve it..."
-  local i
+  echo "Waiting for GitHub Pages to serve them..."
+  local i served=$OUT/served
+  mkdir -p "$served"
   for i in $(seq 30); do
-    if has "<sparkle:shortVersionString>$VERSION<" curl -sf "$SITE/appcast.xml?nocache=$RANDOM"; then
-      echo "Live: $SITE/appcast.xml offers $VERSION"
+    if curl -sf "$SITE/appcast.xml?nocache=$RANDOM" -o "$served/appcast.xml" &&
+       curl -sf "$SITE/ReleaseNotes.html?nocache=$RANDOM" -o "$served/ReleaseNotes.html" &&
+       cmp -s "$served/appcast.xml" appcast.xml && cmp -s "$served/ReleaseNotes.html" ReleaseNotes.html; then
+      echo "Live: $SITE/appcast.xml offers $VERSION, and both files match what was signed"
       return
     fi
     sleep 10
   done
-  echo "warning: $SITE/appcast.xml does not show $VERSION yet; check the Pages deployment on GitHub" >&2
+  echo "warning: GitHub Pages is not serving the new appcast and release notes yet; check the Pages deployment on GitHub" >&2
 }
 
 case $CMD in

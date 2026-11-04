@@ -69,9 +69,23 @@ Github serves files in raw mode with `Content-Type: text/plain`, which prevents 
 2. `scripts/release.sh build VERSION` bumps the version, archives, notarizes, and makes the
    DMG, deltas and signed appcast under build/VERSION. Nothing is published.
    Use `--no-deltas` when SUPublicEDKey changes.
-3. Test the update from the previous version against build/VERSION/appcast.xml.
+3. `scripts/update-test.sh start VERSION`, then Check for Updates in the installed AutoPing,
+   then `scripts/update-test.sh stop`. Add `--tamper` to check that a modified appcast is refused.
 4. `scripts/release.sh publish VERSION` commits, tags, pushes, creates the GitHub release,
-   checks the downloads, then publishes the appcast.
+   checks the downloads, then publishes the appcast and ReleaseNotes.html.
+
+### Signed appcast and release notes
+
+Since 1.1.4 the app sets `SURequireSignedFeed` (and `SUVerifyUpdateBeforeExtraction`, which
+Sparkle requires with it), so appcast.xml and ReleaseNotes.html must carry valid EdDSA
+signatures. The release script signs both. Consequences:
+
+* Don't edit ReleaseNotes.html or appcast.xml outside a release: the live appcast holds the
+  release notes' signature, and an unsigned appcast change makes Sparkle refuse the feed.
+  (If you must, re-sign: `sign_update` on ReleaseNotes.html, put the new signature and length
+  on `sparkle:releaseNotesLink` in appcast.xml, then `sign_update` appcast.xml.)
+* If the Sparkle key is ever lost, installed apps reject the new feed for 20 days
+  (`SUSignedFeedFailureExpirationInterval`), then accept a key rotation release.
 
 ### TODO
 
