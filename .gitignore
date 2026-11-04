@@ -1,2 +1,5 @@
 *.~undo-tree~
 releases/
+.DS_Store
+xcuserdata/
+build/
