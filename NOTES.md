@@ -85,6 +85,14 @@ Github serves files in raw mode with `Content-Type: text/plain`, which prevents 
    checks the downloads, then publishes the appcast and ReleaseNotes.html together and waits
    until GitHub Pages serves them.
 
+`build` warns, at its start and end, if a newer Sparkle release exists than the one pinned in
+Package.resolved. Sparkle releases often include security fixes; to upgrade, use Xcode's
+File > Packages > Update to Latest Package Versions, commit Package.resolved, and build again.
+
+GitHub rulesets ("Protect main", "Protect release tags", under Settings > Rules) block deleting
+or force-pushing `main` and deleting or moving tags. Normal pushes, like the ones `publish`
+makes, are unaffected. Don't add "require pull requests", or `publish` can't push.
+
 To abandon a build: `jj restore AutoPing.xcodeproj/project.pbxproj`, undo the signing comment
 in ReleaseNotes.html if wanted, and delete build/VERSION and releases/AutoPing_VERSION.dmg.
 

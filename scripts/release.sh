@@ -97,6 +97,28 @@ notarize() {
   echo "notarized $(basename "$file") (submission $id)"
 }
 
+# Warn (at the start and end of build) if a newer Sparkle release exists than
+# the one pinned in Package.resolved: Sparkle releases often carry security
+# fixes, and the pin never moves on its own.
+SPARKLE_WARNING=
+check_sparkle() {
+  local resolved=AutoPing.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved pinned latest
+  pinned=$(python3 -I -c 'import json, sys
+print(next(p["state"]["version"] for p in json.load(open(sys.argv[1]))["pins"] if p["identity"] == "sparkle"))' "$resolved") ||
+    { SPARKLE_WARNING="could not read the Sparkle version from Package.resolved"; echo "warning: $SPARKLE_WARNING" >&2; return; }
+  latest=$(curl -sf -m 15 https://api.github.com/repos/sparkle-project/Sparkle/releases/latest |
+    python3 -I -c 'import json, sys; print(json.load(sys.stdin)["tag_name"])' 2>/dev/null) ||
+    { SPARKLE_WARNING="could not check for a newer Sparkle release (bundling $pinned)"; echo "warning: $SPARKLE_WARNING" >&2; return; }
+  if python3 -I -c 'import sys
+v = lambda s: tuple(int(x) for x in s.split("."))
+sys.exit(0 if v(sys.argv[2]) > v(sys.argv[1]) else 1)' "$pinned" "$latest" 2>/dev/null; then
+    SPARKLE_WARNING="Sparkle $latest is out; this release bundles $pinned. Check https://github.com/sparkle-project/Sparkle/releases for security fixes. To upgrade: in Xcode, File > Packages > Update to Latest Package Versions, then commit Package.resolved and build again."
+    echo "warning: $SPARKLE_WARNING" >&2
+  else
+    echo "Sparkle $pinned is the latest release"
+  fi
+}
+
 # Set ASSETS to the names of all files the appcast points at (DMG and deltas),
 # each of which must exist in $ASSET_DIR.
 read_assets() {
@@ -132,6 +154,7 @@ build() {
     die "no earlier DMGs in releases/ to make delta updates from (copy them there, or pass --no-deltas)"
   fi
   op read "$SPARKLE_KEY_REF" >/dev/null || die "cannot read the Sparkle key from 1Password ($SPARKLE_KEY_REF)"
+  check_sparkle
 
   step "Version $old_version ($old_build) -> $VERSION ($build_num)"
   sed -i '' \
@@ -250,6 +273,7 @@ PY
   echo "Appcast:         build/$VERSION/appcast.xml"
   echo "Next: scripts/update-test.sh start $VERSION, then: scripts/release.sh publish $VERSION"
   echo "To abandon: jj restore $PBXPROJ (ReleaseNotes.html now also carries a signing comment)"
+  [ -z "$SPARKLE_WARNING" ] || echo "warning: $SPARKLE_WARNING" >&2
 }
 
 publish() {
