@@ -4,21 +4,22 @@ IMPORTANT: This file was signed by Sparkle. Any modifications to this file requi
     <channel>
         <title>AutoPing</title>
         <item>
-            <title>1.1.4</title>
-            <pubDate>Wed, 04 Nov 2026 02:44:27 -0500</pubDate>
+            <title>1.1.5</title>
+            <pubDate>Thu, 05 Nov 2026 19:26:22 -0500</pubDate>
             <link>https://github.com/alexkhesin/AutoPing</link>
             <sparkle:fullReleaseNotesLink>https://alexkhesin.github.io/AutoPing/ReleaseNotes.html</sparkle:fullReleaseNotesLink>
-            <sparkle:releaseNotesLink sparkle:edSignature="uC3Di++ad6bYKku2LmUHLS7j3nek7rS4HC7SO8RawOwuWkjIhc5FapPHqlELC/NyR0PnWHMnzMf51t+ZYOBvBA==" sparkle:length="2227">https://alexkhesin.github.io/AutoPing/ReleaseNotes.html</sparkle:releaseNotesLink>
-            <sparkle:version>6</sparkle:version>
-            <sparkle:shortVersionString>1.1.4</sparkle:shortVersionString>
+            <sparkle:releaseNotesLink sparkle:edSignature="xIUaLfGUK7Mu+4xt7inaeZnomMSFqI6F1iOGs/QHWh5i3cP4Jid6Y4+xa+jaQcoq9bTt5prPPfMX+GKLz0TWAg==" sparkle:length="2353">https://alexkhesin.github.io/AutoPing/ReleaseNotes.html</sparkle:releaseNotesLink>
+            <sparkle:version>7</sparkle:version>
+            <sparkle:shortVersionString>1.1.5</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>15.5</sparkle:minimumSystemVersion>
-            <enclosure url="https://github.com/alexkhesin/AutoPing/releases/download/1.1.4/AutoPing_1.1.4.dmg" length="2292381" type="application/octet-stream" sparkle:edSignature="e44L2/n2QmZ/o97N4vzxy6dREh63HsttPcshJDSTBbJ8CEkWsBB35/HZ1WTEMlt14k3EnRjXku3/5Mnq8UONBw=="></enclosure>
+            <enclosure url="https://github.com/alexkhesin/AutoPing/releases/download/1.1.5/AutoPing_1.1.5.dmg" length="2292315" type="application/octet-stream" sparkle:edSignature="S/gACbrCwnVqSe5DvRzd3Mp1oc0WOGzMCySO0N+Uh0rvGHw7YyLocrSywkoaCdLHoraKZk1yVbGnQqRU0kF4BA=="></enclosure>
             <sparkle:deltas>
-                <enclosure url="https://github.com/alexkhesin/AutoPing/releases/download/1.1.4/AutoPing6-5.delta" sparkle:deltaFrom="5" length="12418" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="976464" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,uk" sparkle:edSignature="KoZ+KxBGjEkiWcwAQLVExShFHWDt8FkQDhzMwIAvlWOAnW6idc0/eO5R5ZR7SS2bWNDXZXBY7bZv59ptEymRCA=="></enclosure>
+                <enclosure url="https://github.com/alexkhesin/AutoPing/releases/download/1.1.5/AutoPing7-6.delta" sparkle:deltaFrom="6" length="19758" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="976464" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,uk" sparkle:edSignature="UxYcK/2J+xhgqm43CoXIPircLzqEJoLtWzyzQRbRTu1pO66n3l3A7y4DNu7GP7K0nT1L4IrM/phx4vvtOQbCBg=="></enclosure>
+                <enclosure url="https://github.com/alexkhesin/AutoPing/releases/download/1.1.5/AutoPing7-5.delta" sparkle:deltaFrom="5" length="19798" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="976464" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,uk" sparkle:edSignature="To71FwMDx845EmYqPYqVxxghyUcG1Ue55AOeICTBDxLWcS2oE8ba4Q5FYP5TGHj/PV/+El46nLuMCq6JGdxEAQ=="></enclosure>
             </sparkle:deltas>
         </item>
     </channel>
 </rss><!-- sparkle-signatures:
-edSignature: DtmxD2Sa0WzPmwnE8WwEgJRTA15KtpZgRUN5Jf75PT+rU/OXYZ6NdOcShayEBaApsj3DUMychwZvUPIOcKYJAw==
-length: 1958
+edSignature: jVHdiuh3+O6qdLznlHruv5BMz86u5BUjfS59vr689ZOdk/OpMHsDYzI738PUpoAPPt+9e9+tyoE+lNN3sgk4Cw==
+length: 2368
 -->
