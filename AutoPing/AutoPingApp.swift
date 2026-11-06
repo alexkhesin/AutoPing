@@ -1,8 +1,6 @@
 // TODO: draw the two lines using some other mechanism so that
 //  (a) don't have to do cheezy shift-bounds-by-3
 //  (b) can center the single-line case properly
-// TODO: allow specifying IPv6
-// TODO: in IPV6 case, remove ip and ICMP headers in validatePing6ResponsePacket
 // TODO: how to publish in appstore
 // TODO: better colors https://developer.apple.com/design/human-interface-guidelines/macos/visual-design/color/
 // TODO: instead of try?, show errors from SMAppService.mainApp.register

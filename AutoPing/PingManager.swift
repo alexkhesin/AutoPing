@@ -47,11 +47,9 @@ class PingManager : NSObject {
     AppDelegate.log.info("start \(hostName)")
     pinger = SimplePing(hostName: hostName)
     
-    // By default we use the first IP address we get back from host resolution (.Any)
-    // but these flags let the user override that.
-    
-    // Hard-code IPv4 for now, IPv6 does not yet work (packet parsing is the first problem)
-    pinger.addressStyle = .icmPv4
+    // Ping the first address host resolution returns, IPv4 or IPv6 (the default .any).
+    // IPv6 matters even for IPv4 addresses: on IPv6-only networks with NAT64, macOS
+    // turns them into IPv6 addresses.
     
     pinger.delegate = self
     pinger.start()
